@@ -1,0 +1,20 @@
+shared memory: 
+-------------- 
+
+-> shared memory is another formal ipc mechanism which can be used to shared the same memory region across multiple processors. 
+
+posix shared memory: 
+-------------------- 
+
+1. create or open posix shared memory with shm_open interface. this will create  new shared memory kernel data structure whose size 
+   is zero. 
+2. allocte memory for the newly created shared memory object using ftruncate. 
+	unsigned int size; 
+	size = getpagesize(); 
+	ftruncate(shmfd,size); 
+3. map the shared memory part of kernel space to process address space using mmap. 
+4. unmap the map shared memory after done. 
+
+-> posix shared memory files are already mounted. 
+	to look shared memory 
+	ls /dev/shm/ 
