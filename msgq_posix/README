@@ -1,0 +1,48 @@
+posix message queues: 
+--------------------- 
+
+1. posix message queues are implemented and message under mqueue file system. 
+2. applictions are provided with file API's to initiate message queue opertions.each message is identify with priorites. 
+3. readers can only read high priority messages first followed by low priority message(no random access). 
+4. readers can register message queue notification or message arrival notification with the message queue for new message arrival on empty message queue. 
+-> notification can be registered with any one of the following pproch 
+	a.signal notification 
+	b.thread notification 
+limitations: 
+----------- 
+1. doesn't support one to many communication. 
+
+steps for registering signal notification with posix message queue: 
+------------------------------------------------------------------- 
+
+1. identify the signal number which should be used by the posix message queue for notification. 
+2. define the handler function for that signal. 
+3. register the above signal handler with the selected signal number. 
+4. create an instance of type struct sigevent 
+	struct sigevent obj; 
+5. initalize sigevent object with appropriate notification method. 
+	obj.sigev_notify = SIGEV_SIGNAL 
+6. initalize sigevent object with sigev_signo 
+	obj.sigev_signo = SIG_USR1 or SIG_USR2 
+7. invoke mq_notify to register the event with specified posix message queue. 
+
+registering message arrival notification with thread: 
+----------------------------------------------------- 
+
+1. define a thread function. 
+2. create an instance of type struct sigevent then initalizing that object with the following. 
+	struct sigevent obj; 
+	obj.sigev_notify = SIGEV_THREAD 
+	sigev_notify_function = thread_function; 
+3. initalize sigev_notify_attributes with NULL. 
+	sigev_notify_attributes = NULL; 
+4. passing argument to thread function. 
+	1. create an instance of type union sigval and initalize any one of the members with the value which should be pass as the 
+	argument to thread function. 
+
+-> to see posix message queues 
+	sudo mount -t mqueue null /mnt 
+	ls /mnt/ 
+	cat /mnt/test_queue(file name posix ) 
+
+
