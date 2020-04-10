@@ -1,0 +1,48 @@
+Signals
+Signals are asynchronous messages delivered to a process or group of processes from kernel’s process
+manager. Linux supports 64 signals. UNIX and its variants provide two different categories of signals.
+1) General purpose (Event notification) signals
+2) Real time (Process communication) signals
+
+->A general purpose signals are mapped to specific system events and they are identified with a
+specific name and name is assigned as per the event to which they are bound.
+->Set of signals assigned to job control events are triggered when specific job control operations are
+initiated.
+General purpose signals are of five categories:
+
+->Job control: SIGCONT (18), SIGSTOP (19), SIGSTP (20).
+
+->Termination: These signals are used to interrupt or terminate a running process.
+
+SIGINT (2), SIGQUIT (3), SIGABRT (6), SIGKILL (9), SIGTERM (15).
+
+->Async I/O: These signals are generated when data is available on a specific device or when kernel
+services wish to notify applications about resource state.
+SIGURG (23), SIGIO (29), SIGPOLL (29).
+
+->Timer: These signals are generated when application chooses timers alarms.
+SIGALRM (14), SIGPROF (27), SIGVTALRM (26).
+
+->Error reporting: These signals occur when application code runs into an exception.
+SIGHUP (1), SIGILL (4), SIGTRAP (5), SIGBUS (7), SIGFPE (8), SIGPIPE (13), SIGSEGV (11),
+SIGXCPU (24).
+
+Real time signals are exclusively meant for process communication. These signals do not have pre assigned
+names. They are priority ordered (33-64).
+
+Signal flow:
+
+The source of a signal can be
+	1) Process
+	2) Exception handler (error reporting signals)
+	3) Kernel services (drivers)
+->The destination of the signal would be a process always.
+->Signal generation and signal delivery may not take place in sequence. Signaling subsystem may delay
+the delivery of a signal when destination process is not ready to receive signals. The main reasons for
+the signal delay are
+	1) Destination process is in wait state.
+	2) Destination process has explicitly disabled signal delivery.
+->An application can respond to a signal using either of the following methods.
+	1) Execution of kernel defined signal handler (default).
+	2) Execution of application defined (specific) signal handler.
+	3) Ignore.
