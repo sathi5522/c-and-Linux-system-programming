@@ -1,0 +1,1 @@
+multiplexing on multiple IPCs( Unix sockets, network sockets, message queues) in server and different clients connected to server. server responds all clients. 
