@@ -70,5 +70,7 @@ int main()
 	get_broadcast_address(ipaddr, mask, ipadd_buffer);
 	printf("Broadcast address = %s\n",ipadd_buffer);
 
+	unsigned int ip_int = get_ip_integer_equivalent(ipaddr);
+	printf("the ip = %s ip_int %u\n", ipaddr, ip_int);
 	return 0;
 }
