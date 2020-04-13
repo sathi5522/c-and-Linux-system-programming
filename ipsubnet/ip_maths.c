@@ -72,5 +72,9 @@ int main()
 
 	unsigned int ip_int = get_ip_integer_equivalent(ipaddr);
 	printf("the ip = %s ip_int %u\n", ipaddr, ip_int);
+
+	ip_int = 2058138155;
+	get_abcd_ip_format(ip_int,ipadd_buffer);
+	printf("The ip A.B.C.D format %s\n", ipadd_buffer);
 	return 0;
 }
