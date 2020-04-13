@@ -64,6 +64,19 @@ unsigned int get_subnet_cardinality(char mask)
 	return (pow(2, MAX_MASK_LEN - mask) - 2);
 }
 
+int check_ip_subnet_membership(char *network_id, char mask, char *check_ip)
+{
+	unsigned int nw_ip = get_ip_integer_equivalent(network_id);
+	unsigned int ip = get_ip_integer_equivalent(check_ip);
+	unsigned network_mask = get_network_mask(mask);
+	unsigned int chk_ip_network = ip & network_mask;
+
+	if (chk_ip_network == nw_ip)
+		return 0;
+	else
+		return -1;
+}
+
 int main()
 {
 	char ipadd_buffer[PREFIX_LEN];
@@ -86,5 +99,12 @@ int main()
 
 	ip_int= get_subnet_cardinality(mask);
 	printf("the allowed ips %u\n", ip_int);
+
+	char *network_id = "192.168.0.0";
+	int result = check_ip_subnet_membership(network_id, mask, ipaddr);
+	if(result == 0)
+		printf("ipaddr = %s is a member of subnet %s %u\n",ipaddr, network_id, mask);
+	else
+		printf("ipaddr = %s is not a member of subnet %s %u\n",ipaddr, network_id, mask);
 	return 0;
 }
