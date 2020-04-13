@@ -59,6 +59,10 @@ void get_broadcast_address(char *ip_addr, char mask, char *output_buffer)
 	get_abcd_ip_format(broadcast_addr, output_buffer);
 }
 
+unsigned int get_subnet_cardinality(char mask)
+{
+	return (pow(2, MAX_MASK_LEN - mask) - 2);
+}
 
 int main()
 {
@@ -79,5 +83,8 @@ int main()
 
 	get_network_id(ipaddr, mask, ipadd_buffer);
 	printf("the networ id %s\n", ipadd_buffer);
+
+	ip_int= get_subnet_cardinality(mask);
+	printf("the allowed ips %u\n", ip_int);
 	return 0;
 }
