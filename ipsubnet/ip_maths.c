@@ -76,5 +76,8 @@ int main()
 	ip_int = 2058138155;
 	get_abcd_ip_format(ip_int,ipadd_buffer);
 	printf("The ip A.B.C.D format %s\n", ipadd_buffer);
+
+	get_network_id(ipaddr, mask, ipadd_buffer);
+	printf("the networ id %s\n", ipadd_buffer);
 	return 0;
 }
