@@ -1,0 +1,50 @@
+satheesh@satheesh-Inspiron-3558:~$ mkdir git
+satheesh@satheesh-Inspiron-3558:~$ cd git
+satheesh@satheesh-Inspiron-3558:~/git$ git init
+Initialized empty Git repository in /home/satheesh/git/.git/
+satheesh@satheesh-Inspiron-3558:~/git$ mkdir ServerDesign
+satheesh@satheesh-Inspiron-3558:~/git$ git add ServerDesign/
+satheesh@satheesh-Inspiron-3558:~/git$ cd ServerDesign/
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ mkdir AF_UNIX
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git add AF_UNIX/
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ ls
+AF_UNIX
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ ls
+AF_UNIX
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ ls AF_UNIX/
+client.c  server.c
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git add AF_UNIX/client.c 
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git add AF_UNIX/server.c 
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git commit -m "AF_UNIX single client and server" 
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'satheesh@satheesh-Inspiron-3558.(none)')
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git config --global user.email "sathi.nelavalli@gmail.com"
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git config --global user.name "sathi5522"
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git commit -m "AF_UNIX single client and server" 
+[master (root-commit) 088fb87] AF_UNIX single client and server
+ 2 files changed, 242 insertions(+)
+ create mode 100644 ServerDesign/AF_UNIX/client.c
+ create mode 100644 ServerDesign/AF_UNIX/server.c
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git remote add origin https://github.com/sathi5522/c-and-Linux-system-programming.git
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$ git push -u origin master
+Username for 'https://github.com': sathi5522
+Password for 'https://sathi5522@github.com': 
+Counting objects: 6, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (6/6), 2.59 KiB | 0 bytes/s, done.
+Total 6 (delta 0), reused 0 (delta 0)
+To https://github.com/sathi5522/c-and-Linux-system-programming.git
+ * [new branch]      master -> master
+Branch master set up to track remote branch master from origin.
+satheesh@satheesh-Inspiron-3558:~/git/ServerDesign$
