@@ -14,12 +14,15 @@ int main()
 	}
 
 	char b[3] = {'1','2','3'};
-	//char *p;
 	SetBitChar(b,3);
 	for(i = 0;i < 3; i++) {
-		//p = (char *)&b[i];
 		printf("%c %d\n",b[i],b[i]);
 	}
+	int c = 256;
+        int x = 1;
+        x = x << 7;
+        c = c|x;
+        printf("%d \n",c);
 	
 	return 0;
 }
