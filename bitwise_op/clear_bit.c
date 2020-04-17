@@ -16,6 +16,11 @@ int main()
 	for(i = 0;i < 3; i++) {
 		printf("%c %d\n",b[i],b[i]);
 	}
-	
+
+	int c = 256;
+	int x = 1;
+	x = x << 8;
+	c = c&~x;
+	printf("%d \n",c);	
 	return 0;
 }
