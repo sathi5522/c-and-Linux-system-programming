@@ -1,4 +1,5 @@
 obj-m=example_module.o
+obj-m+=export_symbol.o
 
 KDIR=/lib/modules/$(shell uname -r)/build
 
