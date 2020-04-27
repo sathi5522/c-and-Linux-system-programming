@@ -21,5 +21,5 @@ module_exit(my_exit);
 
 EXPORT_SYMBOL_GPL(val);
 MODULE_AUTHOR("satheesh");
-//MUDULE_DESCRIPTION("examplemodule");
+MODULE_DESCRIPTION("examplemodule");
 MODULE_LICENSE("GPL");

@@ -36,4 +36,5 @@ module_init(my_init);
 module_exit(my_exit);
 
 MODULE_AUTHOR("satheesh");
+MODULE_DESCRIPTION("symbol");
 MODULE_LICENSE("GPL");

@@ -25,5 +25,5 @@ module_exit(my_exit);
 
 MODULE_AUTHOR("satheesh");
 MODULE_PARM_DESC(val, "INITALISE val");
-//MUDULE_DESCRIPTION("examplemodule");
+MODULE_DESCRIPTION("module param");
 MODULE_LICENSE("GPL");
