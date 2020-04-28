@@ -1,5 +1,6 @@
 obj-m=char_drv.o
 obj-m+=char_drv_dynamic.o
+obj-m+=char_drv_udev.o
 
 KDIR=/lib/modules/$(shell uname -r)/build
 

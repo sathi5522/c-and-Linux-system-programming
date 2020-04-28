@@ -13,7 +13,8 @@ int main()
 
 	char buf[10];
 
-	fd = open("/dev/my_cdev",O_RDWR);
+	//fd = open("/dev/my_cdev",O_RDWR);
+	fd = open("/dev/my_cdev1",O_RDWR);
 
 	memset(buf,'A',sizeof(buf));
 

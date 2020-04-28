@@ -1,10 +1,9 @@
-/*Major and Minior number dynamic*/
+/*Automatic node creation and deletion with the help of udev*/
 /*steps for creating char driver
         1. implementthe driver operations and register with vfs layer
-        2. insert the driverusing a kernel module
+	2. create class and device
+        3. insert the driverusing a kernel module
                 insmod char_drv_dynamic.ko
-        3. create a device node (see my_cdev major number in cat /proc/devices and use that major number when creating an device interface) 
-                mknod /dev/my_cdev c 300 0
         4. write an application that initiates operations on our driver through common file api
 */
 
@@ -19,6 +18,7 @@
 
 static dev_t mydev;
 struct cdev *mycdev;
+struct class *my_class;
 
 int myopen(struct inode *inode, struct file *file)
 {
@@ -85,12 +85,17 @@ static int __init my_init(void)
 		unregister_chrdev_region(mydev, count);
                 return ret;
         }
+	/* 2. create class and device*/
+	my_class = class_create(THIS_MODULE,"VIRTUAL");
+	device_create(my_class, NULL, mydev, NULL, "%s%d","my_cdev",1);
         printk("char driver module loaded\n");
         return 0;
 }
 
 static void __exit my_exit(void)
 {
+	device_destroy(my_class,mydev);
+	class_destroy(my_class);
         cdev_del(mycdev);
         unregister_chrdev_region(mydev,1);
         printk("char driver module unloaded\n");
