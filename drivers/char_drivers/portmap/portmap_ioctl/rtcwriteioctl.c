@@ -38,12 +38,12 @@ long myioctl(struct file *file, unsigned int cmd, unsigned long arg) {
 	}
 
 	if(_IOC_DIR(cmd) && _IOC_READ)
-		if(_IOC_DIR(cmd) & _IOC_WRITE)
-			if(!access_ok(VERIFY_WRITE,(void *)arg,_IOC_SIZE(cmd)))
-				return -EIO;
+		if(!access_ok(VERIFY_WRITE,(void *)arg,_IOC_SIZE(cmd)))
+			return -EIO;
 
-	if(!access_ok(VERIFY_READ,(void *)arg,_IOC_SIZE(cmd)))
-		return -EIO;
+	if(_IOC_DIR(cmd) & _IOC_WRITE)
+		if(!access_ok(VERIFY_READ,(void *)arg,_IOC_SIZE(cmd)))
+			return -EIO;
 
 	switch(cmd){
 		case WRITE_DATE:
