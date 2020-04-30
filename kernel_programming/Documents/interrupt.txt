@@ -1,0 +1,155 @@
+Interrupts:
+----------
+
+1. linux kernel configure do_irq() routine as a default response function for all external interrupts.
+
+2. do_irq() is routine of process 0, to which is responsible for allocation of interrupt stack and invoking appropriate interrupt service function.
+
+3. the default interrupt stack is 8k.
+
+interrupt vectors:
+------------------
+
+	vector			Description
+1. 0 - 19 (0x0 - 0x13)		Non-maskable interrupts & exceptions
+2. 20 - 31 (0x14 - 0x1f)	Intel reserved
+3. 32 - 127 (0x20 - 0x7f) 	External interrupts(IRQs)
+4. 128 (0x80)			system calls exceptions
+5. 129 - 238 (0x81 - 0xee)	Externalinterrupts(IRDs)
+
+steps to execute do_irq:
+-----------------------
+1. find interrupt request line on which interrupt signal was triggered.
+2. look up irq descriptor table for registered interrupt service routine.
+3. invoke registered ISR
+4. enable IRQ line
+5. execute other priority work.
+6. Invoke process sechudler.
+
+Interrupt latency:
+-----------------
+Interrupt latency is about total amount of time spend by a system to response a interrupt.
+
+factors contributing to interrupt latency:
+-----------------------------------------
+1. hardware latency
+2. kernel latency
+3. interrupt handler latency
+4. soft interrupt latency
+5. sechudler latency
+
+Designing Interrupt service routine:
+-----------------------------------
+
+1. allocate a buffer to hold the packet.
+2. copy the packet from device to buffer.
+3. process the physical packet.
+4. deliver the packet of upper layer.
+
+-> sample sudo code of interrupt handler that response to reception of new packet on network device.
+	ISR
+	{
+		1. allocate buffer.
+		2. copy packet from hardware.
+		3. process physical header.
+		4. queue packet for protocol layers.
+	}
+
+-> while implementing ISR the following issues are to be considered.
+
+Dont's:
+------
+1. Avoid calling dynamic memory allocation routine.
+2. Avoid transferring data b/w two buffer blocks synchronusly.
+3. Avoid contending for access of global data structure.
+4. Avoid operation on user space addresses.
+5. Don't called to sechduler.
+6. Avoid call to operation which are non atomic.
+
+Do's:
+----
+1. Allocate buffer(use pre allocated buffer)
+2. consider using DMA when ever data to be transffered b/w device and memory.
+3. consider using per cpu data wher ever needed.
+4. Identify non critical work and use appropratie deffered routine to execute them when system is idel or other sechdule time.
+
+bottom half:
+-----------
+1. softirq:
+----------
+-> statically allocated at compile time.
+-> maximum of 32 softirqs.
+-> preemption disabled, Interrupts enabled.
+-> Activating a softirq.
+	- Register softirq with open_softirq()
+	- Raise softirq with raise_softirq()
+-> Executing a softirq.
+	- return from hardware interrupt code
+	- by the ksoftirqd thread.
+	- code that explicitly checks and executes softirqs
+
+executing of softirq:
+--------------------
+-> when raise_softirq gets called specified softirq instance is enqueued to the list ofpending softirq(per cpu).
+-> softirq are executes by do_irq
+-> pending softirq list is cleared by do_irq routine immediately after ISR terminates with interrupts lines enabled.
+-> softirq makes secured in the context of ksoftirqd(per cpu kernel threads).
+-> resechduling bottom half is required to wellinqush cpu with in a bottom half when a critical resource required for the bottom half execution is not available.
+
+limitations of softirq:
+-----------------------
+-> softirqs are concurrent that is same softirq could be run on n cpus paralley.
+-> while implementing softirq code using mutal exclusion lock is mandatory wher ever needed.
+-> using lock in interrupt context code will result in variable time interrupt latency.
+
+2. tasklets:
+------------
+tasklets are dynamic softirqs that can be used with in module drivers without concurrency(tasklets are always executed serially).
+
+Implementation:
+---------------
+Tasklets are internally softirq's(HI_SOFTIRQ, TASKLET_SOFTIRQ).
+Each tasklet is nothing but a available of tasklet_struct.
+using tasklets the following steps are involved.
+1. declare tasklet
+	DECLARE_TASKLET(name, func, data);
+		or
+	struct tasklet_struct mytasklet;
+	tasklet_init(mytasklet, func, data);
+2. Implement BH routine.
+	void func(unsigned long data);
+3. schedule tasklet
+	tasklet_schedule(&mytasklet);
+		or
+	tasklet_hi_schedule(&mytasklet);
+
+-> tasklets are executed using the same policy that is applied for softirqs since interrupt subsystem of kernel use a tasklet either an instance of type HI_SOFTIRQ or TASKLET_SOFTIRQ.
+-> Interrupt subsystem gaurantee the following which regards executio of tasklets
+	1. when schedule function tasklet_schedule() is called, then tasklet is gauranteed to be executed on some cpu at least once after this.
+	2. if the tasklet is already scheduled, but its execution is still not started, it will be executed only once.
+	3. if this taskletis already running on another cpu(or schedule is called from tasklet itself), it is rescheduled for later.
+	4. tasklet is strictly serialized wrt itself, but not wrt another tasklets. if client needs some inter task synchronization, he makes it with spinlocks.
+
+3. work queues:
+---------------
+-> work queue is process context bottom half.
+-> when we have longer operations in bottom half work queue is most favourite option.
+	1. Declare work queue
+		DECLARE_WORK(wq, (work_func_t)wq_func);
+			or
+		INIT_WORK(wq, wq_func, 0);
+	2. Implement BH routine
+		void wq_func(void *arg);
+	3. schedule work queue
+		schedule_work(&wq);
+		schedule_delayed_work(&wq, DELAY);
+
+work queue timer:
+-----------------
+static struct timer_list my_timer;
+static int len =100;
+init_timer(&my_timer);
+my_timer.function = my_timer_function;
+my_timer.expires = jiffies+HZ; /* one sec delay*/
+my_timer.data = len;
+add_timer(&my_timer);
