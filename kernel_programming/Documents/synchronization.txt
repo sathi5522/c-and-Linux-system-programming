@@ -1,0 +1,134 @@
+Atomic Operations:
+------------------
+#include<asm/atomic.h>
+type:
+-----
+atomic_t
+contains a signed integer.
+
+Atomic operations(main ones):
+-----------------------------
+set or read the counter
+atomic_set(atomic_t *v, int i);
+int atomic_read(atomic_t *v);
+
+operations without return value:
+--------------------------------
+void atomic_inc(atomic_t *v);
+void atomic_dec(atomic_t *v);
+void atomic_add(int i, atomic_t *v);
+void atomic_sub(int i, atomic_t *v);
+
+similar functions testing the results:
+--------------------------------------
+int atomic_inc_and_test(...);
+int atomic_dec_and_test(...);
+int atomic_sub_and_test(...);
+
+functions returning the new value:
+----------------------------------
+int atomic_inc_and_return(...);
+int atomic_dec_and_return(...);
+int atomic_add_and_return(...);
+int atomic_sub_and_return(...);
+
+Atomic bit operations:
+----------------------
+set, clear, toggle a given bit:
+void set_bit(int nr, unsigned long *addr);
+void clear_bit(int nr, unsigned long *addr);
+void change_bit(int nr, unsigned long *addr);
+
+test bit value:
+int test_bit(int nr, unsigned long *addr);
+
+test and modify(return the previous value):
+int test_and_set_bit(...);
+int test_and_clear_bit(...);
+int test_and_change_bit(...);
+
+semaphore initialization:
+-------------------------
+	#include<asm/semaphore.h>
+	struct semaphore sem;
+	void sem_init(struct semaphore *sem, int value);
+
+the usual technique, however is:
+	DECLARE_MUTEX(name);
+	DECLARE_MUTEX_LOCKED(name);	olderversion kernel
+or at runtime:
+	void init_MUTEX(struct semaphore *sem);
+	void init_MUTEX_LOCKED(struct semaphore *sem);
+
+semaphore acquisition:
+----------------------
+	void down(struct semaphore *sem);
+		blocks(uninterruptible) until sem is available.
+	int down_interruptible(struct semaphore *sem);
+		blocks until sem is available. can be interrupted by signals.
+		non-zero return indicates signal
+	int down_trylock(struct semaphore *sem);
+		will acquire semaphore if available, but will not sleep.
+		return value of zero indicates success.
+	void up(struct semaphore *sem);
+		releasing a semaphore.
+		notes: only a legitimate holder can call up() if always succeeds.
+
+read/write semaphores:
+----------------------
+	#include<linux/rwsem.h>
+	void init_rwsem(struct rw_semaphore *sem);
+	void down_read(struct rw_semaphore *sem);
+	int down_read_trylock(struct rw_semaphore *sem);
+	void up_read(struct rw_semaphore *sem); 
+	void down_write(struct rw_semaphore *sem);
+	int down_write_trylock(struct rw_semaphore *sem);
+	void up_write(struct rw_semaphore *sem); 
+there is no interruptble version.
+
+linux mutexes:
+--------------
+	#include<linux/mutex.h>
+	DEFINE_MUTEX(name); 	initializing statically
+	void mutex_init(struct mutex *lock);	initializing dynamically
+	void mutex_lock(struct mutex *lock);
+		tries to lock the mutex, sleeps otherwise
+		caution: can't be interrupted, resulting in processes you cannot kill.
+	int mutex_lock_killable(struct mutex *lock);
+		same, but can be interrupted by a fatal(SIGKILL) signal. if interrupted, returns a non zero valueand doesn't hold the lock.
+	int mutex_lock_interruptible(struct mutex *lock);
+		same, but can be interrupted by any signal.
+	int mutex_trylock(struct mutex *lock);
+		never waits. returns a non zero value if the mutex is not available.
+	int mutex_is_locked(struct mutex *lock);
+		just tells whether the mutex is locked or not.
+	void mutex_unlock(struct mutex *lock);
+		release the lock. do it as soon as you leave the critical section.
+
+spinlocks:
+----------
+	#include<linux/spinlock.h>
+	spinlock_t my_lock = SPIN_LOCK_UNLOCKED;
+	spinlock_t my_lock;
+	spin_lock_init(&my_lock);
+Acquisition functions:
+	void spin_lock(spinlock_t *lock);
+	void spin_unlock(spinlock_t *lock);
+
+Notes: spinlock ops are not interruptible.
+	Deadlocks are easy to create.
+
+Interrupts and spinlocks:
+------------------------
+	void spin_lock(spinlock_t *lock);
+		the normal locking function.
+	void spin_lock_irqsave(spinlock_t *lock, unsigned long flags);
+		disable interrupts, saves previous state. note flags is passed "by value".
+	void spin_lock_irq(spinlock_t *lock);
+		disable inerruptswithout saving state. use when you know interrupts are enabled.
+	void spin_lock_bh(spinlock_t *lock);
+		only disables software interrupts.
+	void spin_unlock(spinlock_t *lock);
+	void spin_unlock_irqrestore(spinlock_t *lock, unsigned long flags);
+	void spin_unlock_irq(spinlock_t *lock);
+	void spin_unlock_bh(spinlock_t *lock);
