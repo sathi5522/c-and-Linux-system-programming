@@ -1,0 +1,138 @@
+Responsibilites of memory initializer:
+--------------------------------------
+1. Allocate a page list with instance of struct page representing each physical frame.
+2. catagarize pages into appropriate zone.
+	1. zone DMA (0 - 16 MB)
+	2. zone normal (16 - 896 MB)
+	3. zone high (>896 MB)
+3. Initalize high level mm
+
+Allocators:
+-----------
+	1. page
+	2. slab	-------> block memory
+	3. cache ------> reserve some memory
+	4. fragment ---> connect all the fragmentedmemory return virtually contigeous
+
+-> kamallo  and kfree slab allocators.
+-> cat /proc/slabinfo
+-> create own cache on kernel
+	int *ret;
+	kmem_cache_t *cache_ptr;
+	int mem=300;
+	ret = kmem_cache_alloc(cache_ptr, GFP_KERNEL);
+	/* alloc cache and make it resident*/
+	cache_ptr = kmem_cache_create("cache_mem", mem, 0, SLAB_HWCACHE_ALIGN, NULL, NULL);
+
+-> kmem_cache_free(cache_ptr, ret);
+   kmem_cache_destroy(cache_ptr);
+
+Memeory management in linux DMA:
+--------------------------------
+Page tables:
+------------
+Managing Page Tables:
+---------------------
+1. space overhead of page tables
+	- the size of the page table for a 32-bit address space with 4kb pages =4MB(per process).
+2. how can we reduce this overhead?
+	- observation: only need to map the portion of the address space actually being used(tiny fraction of entire address sapace).
+3. how do we onlymap what is being used?
+	- make the page table structure dynamically extensible.
+	- use another level of indirection:
+		- two-level, three-level, four-level, etc.
+
+page table translation:
+-----------------------
+1. each process carries it's own page table allocated by kernel at the process load time.
+2. page table contain entry mapping page to the valid physical frame
+	valid 	virtual page	modified	protection	page frame
+	1	  140		1		RW		31
+	1	   20		0		RX		38
+	1	  130		1		RW		29
+3. processor MMUat runtime looks up into page table to translate a logical address to physical and reference of page table it's loaded into processor register on every contxt switch.
+
+overhead with page table:
+-------------------------
+-> As the number of processes increased kernel makes to set a size around 3MB of physical memory for each process to hold PTE.
+-> All modern operating systems use various indirection techniques like two-level paging, three-level paging and so on. we can objective to enable page table dynamically extensible.
+
+two-level paging:
+-----------------
+-> 32-bit address space, 4KB pages, 4bytes/PTE.
+-> want master page table in one page.
+
+limitations with page table management:
+---------------------------------------
+-> processor need to spend n amount of cycles lookig up into page tables before the actual operation on memory can be executed.
+-> to optimise the address translation time all processors provide specific cpu local buffers called buffer TLB.
+
+TLB:
+----
+TLB's can be managed in two ways
+	1. kernel managed or software managed
+	2. Hardware managed.
+-> in software managed mode each TLB miss event trigger an exception. which in term is handle by kernel by updating TLB entry.
+-> in hardware managed mode each TLB miss event makes the processor jump into physical page table in memory and load appropriate entries into TLB.
+-> processor also provide high speed data interaction cache to optimise program execution by mirroring programs data flash interaction to cache.
+
+Port map and memory map:
+------------------------
+	MMIO					PIO
+	-----					----
+-> same address bus to address memory		-> different address spaces for memory and i/o
+	and i/o devices.				devices.    
+-> accsee to the i/o devices using 		-> uses a special class of cpu instructions to
+	regular instructions.				access i/o devices.
+-> most widely used i/o method across		-> Example on x86: IN and OUT instructions.
+	the different architectures
+	supported by linux.
+-> cat /proc/iomem				-> cat /proc/ioports
+
+accessing port map devices(user space):
+---------------------------------------
+1. portmap addresses can be accessed by applications of linux and kernel space sevices.
+2. applications can acceess port map devices using either of the following way.
+	1. running as root application using ioperm routine.
+		ioperm(addr, nports, 0);
+	2. using operations on special device file /dev/port
+		fd = open("/dev/port", O_RDWR);
+		lseek(fd, addr, SEEK_SET);
+		write(fd, &zero, 1);
+
+kernel space port map device access:
+------------------------------------
+-> modules can make use of request_region routine to check for port access permission and accquiredport resource.
+	struct resource *request_region(unsigned long start, unsigned long len, char *name);
+	void release_region(unsigned long start, unsigned long len);
+-> use kernel mode in out family of function for reads and write i/o ports.
+	unsigned in[bwl](unsigned long *addr);
+	void out[bwl](unsigned port, unsigned long *addr);
+	and the string variants:
+	void ins[bwl](unsigned port, void *addr, unsigned long count);
+	void outs[bwl](unsigned port, void *addr, unsigned long count);
+	
+-> since linux 2.6.9 it is possible to get a virtual address corresponding to an i/o ports range.
+	#include<asm/io.h>
+	void *ioport_map(unsigned long port, unsigned long nr);
+	void ioport_unmap(void *address);
+
+Accessing i/o memory map:
+-------------------------
+-> thanks to ioport_map() it is possible to mix PIO and MMIO in a transparent way. the following functions can be used to access memory areas returned by ioport_map() or ioremap().
+	unsigned int ioread8(void *addr); (same for 16 and 32)
+	void iowrite8(u8 value, void *addr); (same for 16 and 32);
+-> no way to perform memory map devices on user space, only kernel space we perform memory map.
+	#include<asm/io.h>
+	void *ioremap(unsigned long phys_addr, unsigned long size);
+	void iounmap(void *address);
+-> to do PCI-style, little endian access:
+	unsigned read[bwl](void *addr);
+	void write[bwl](unsigned a, void *addr);
+
+memory alignment:
+-----------------
+-> memory alignment is storing data value at the address which is evenly divisable by size.
+-> unaligned data causes exceptions on some architectures and is not supported some architectures.
+	ex: intel x86 throws an exception an unaligned data operation is initiated. 
+
