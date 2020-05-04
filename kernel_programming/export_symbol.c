@@ -1,3 +1,14 @@
+/* 	By default all global symbols in modules have static linkage other modules can't access such symbols
+	
+	modules can selectively export data symbols or function symbols into the kernel global_symbol_table.
+
+	exporting a symbol in a module will make these symbols visible to rest of the kernel code and can be accessed by any of the kernel code
+
+		EXPORT_SYMBOL(sysname) -> unconditional export any kernel code can access this symbol
+		EXPORT_SYMBOL_GPL(sysname) -> conditional export only those parts of the kernel code which are registered with GPL license can 			access this symbol. kernel code without GPL license acn't access this symbol.
+		EXPORT_SYMBOL_GPL_FUTURE(symname) -> symbol which is not GPL as of know but in future it's changed to GPL.
+*/	
+
 #include<linux/module.h>
 #include<linux/kernel.h>
 #include<linux/version.h>
