@@ -1,3 +1,12 @@
+/* block driver execution steps
+	1. insmod block_driver.ko
+	2. mkfs.ext2 /dev/sbd0
+	3. mount -text2 /dev/sdb0 /media
+	4. cd /media/
+	5. touch abc
+	6. mkdir xyz
+*/
+
 #include<linux/module.h>
 #include<linux/moduleparam.h>
 #include<linux/init.h>
