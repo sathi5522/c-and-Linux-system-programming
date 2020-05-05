@@ -105,8 +105,7 @@ static void sbd_request(struct request_queue *q)
 	
 	/* take requests one by one from the request queue and process it */
 	while((req = blk_fetch_request(q)) != NULL) {
-		//if(!blk_fs_request(req)) {
-		if (req == NULL || (req->cmd_type != REQ_TYPE_FS)) {
+		if(!blk_fs_request(req)) {
 			__blk_end_request(req, 0, 0);	//if not end this request
 			continue;
 		}
