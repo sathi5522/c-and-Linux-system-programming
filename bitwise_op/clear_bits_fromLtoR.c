@@ -1,7 +1,7 @@
 #include <stdio.h> 
   
 // function to toggle bits in the given range 
-unsigned int setBitsFromLToR(unsigned int n, 
+unsigned int clearBitsFromLToR(unsigned int n, 
                                 unsigned int l, unsigned int r) 
 { 
     // calculating a number 'num' having 'r' 
@@ -20,6 +20,6 @@ int main()
 { 
     unsigned int n = 63;   //0011 1111 
     unsigned int l = 1, r = 5; 
-    printf("%u \n",setBitsFromLToR(n, l, r)); 
+    printf("%u \n",clearBitsFromLToR(n, l, r)); 
     return 0; 
 } 
