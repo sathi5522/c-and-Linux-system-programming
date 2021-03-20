@@ -73,6 +73,56 @@ Do's:
 3. consider using per cpu data wher ever needed.
 4. Identify non critical work and use appropratie deffered routine to execute them when system is idel or other sechdule time.
 
+Top Halves and bottom Halves
+
+In last chapter we discussed about Interrupts , how interrupts are handled and registered. In this chapter we will learn what are top halves and bottom halves , what was the limitation of previous implementation of interrupt handler etc.
+
+Limitations On interrupt handler:-
+
+1) It runs asynchronously by interrupting the other code.
+
+2)All interrupt on the current processor disabled.
+
+3)Interrupts are often time critical as they deal with hardware.
+
+4) We cannot block interrupt handler as they run in interrupt context.
+
+Because of all these limitation if our interrupt handling will last for long then our system performance will be less as we won’t able to serve any other request during interrupt handling. So it’s better to shorten the interrupt handling and perform less critical work later.
+
+Interrupt handling is divided into two parts
+
+1) Top Halves:- It is executed as immediate response to interrupt.
+
+2)Bottom Halves:- It is executed some time later when CPU get free time.
+
+Top Halves:- Top halves executes as soon as CPU receives the interrupt . Following work are generally performed in top halves
+
+1) Acknowledgement of receiving the interrupt
+
+2) copy if some data is received
+
+3) if the work is sensitive needs to perform in top halves.
+
+4)If the work is related to hardware needs to perform in top halves.
+
+5)If the work needs to be ensure that another interrupt does not interrupt it , should be perform in interrupt handler.
+
+Everything else is performed in bottom halves . Lets understand Bottom halves in details
+
+Bottom Halves:- Job of bottom halves is to perform the left out work that was not performed by the interrupt handler or top halves. After bottom halves complete their work, It schedule bottom halves for the later time in future whenever our system will be ideal With the time various techniques of bottom halves evolved . Following are types of bottom halves.
+
+ 
+
+1) Original “bottom Half”
+
+2)Task Queues
+
+3) Softirq
+
+4)Tasklets
+
+5)workqueus
+
 bottom half:
 -----------
 1. softirq:
