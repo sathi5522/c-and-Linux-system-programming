@@ -1,0 +1,25 @@
+#define SEC 		0x00
+#define MIN 		0x02
+#define HRS 		0x04
+#define DAYNUMINWEEK 	0x06
+#define DAY 		0x07
+#define MONTH 		0x08
+#define YEAR 		0x09
+#define COMMAND_REG 	0x70
+#define DATA_REG 	0x71
+#define STATUS_REG 	0x71
+
+#define READ_SEC(s) outb(SEC,COMMAND_REG);\
+        	        s = inb(STATUS_REG);
+#define READ_MIN(m) outb(MIN,COMMAND_REG);\
+        	        m = inb(STATUS_REG);
+#define READ_HRS(h) outb(HRS,COMMAND_REG);\
+        		h = inb(STATUS_REG);
+#define READ_DAY(d)  outb(DAY,COMMAND_REG);\
+       	 		d = inb(STATUS_REG);
+#define READ_MONTH(m1) outb(MONTH,COMMAND_REG);\
+        		m1 = inb(STATUS_REG);
+#define READ_YEAR(y) outb(YEAR,COMMAND_REG);\
+        		y = inb(STATUS_REG);
+#define READ_DAYNUMINWEEK(r) outb(DAYNUMINWEEK,COMMAND_REG);\
+        		r = inb(STATUS_REG);

@@ -1,0 +1,1 @@
+cmd_/home/morning/sathi/drivers/ioctl.ko := ld -r -m elf_i386 -T /usr/src/linux-headers-3.5.0-23-generic/scripts/module-common.lds --build-id  -o /home/morning/sathi/drivers/ioctl.ko /home/morning/sathi/drivers/ioctl.o /home/morning/sathi/drivers/ioctl.mod.o

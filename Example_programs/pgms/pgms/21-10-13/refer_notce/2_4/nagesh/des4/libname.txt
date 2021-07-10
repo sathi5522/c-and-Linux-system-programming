@@ -1,0 +1,5 @@
+gif./d3_giflib.so
+tif./d3_tiflib.so
+jpg./d3_jpglib.so
+
+

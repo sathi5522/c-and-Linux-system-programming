@@ -1,0 +1,1 @@
+cmd_/home/morning/sathi/led/led2.ko := arm-linux-ld -EL -r  -T /home/morning/sathi/embedded/kernel/linux-2.6.37.2/scripts/module-common.lds --build-id  -o /home/morning/sathi/led/led2.ko /home/morning/sathi/led/led2.o /home/morning/sathi/led/led2.mod.o

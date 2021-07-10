@@ -1,0 +1,3 @@
+./libgifh.so
+./libgifh.so
+./libjpgh.so

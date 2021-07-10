@@ -1,0 +1,1 @@
+cmd_/home/morning/sathi/ioctl/buf/buf.ko := ld -r -m elf_i386 -T /usr/src/linux-headers-3.5.0-23-generic/scripts/module-common.lds --build-id  -o /home/morning/sathi/ioctl/buf/buf.ko /home/morning/sathi/ioctl/buf/buf.o /home/morning/sathi/ioctl/buf/buf.mod.o

@@ -1,0 +1,1 @@
+cmd_/home/morning/sathi/kernelprograming/drivers/chrrtc1.ko := ld -r -m elf_i386 -T /usr/src/linux-headers-3.5.0-23-generic/scripts/module-common.lds --build-id  -o /home/morning/sathi/kernelprograming/drivers/chrrtc1.ko /home/morning/sathi/kernelprograming/drivers/chrrtc1.o /home/morning/sathi/kernelprograming/drivers/chrrtc1.mod.o
